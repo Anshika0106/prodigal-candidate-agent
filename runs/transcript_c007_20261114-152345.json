@@ -1,0 +1,430 @@
+{
+  "candidate_id": "c007",
+  "redacted": true,
+  "redaction_note": "Name, phone, email and profile URLs are masked. Candidate replies in sample runs were written for testing, not by a real candidate.",
+  "started_at": "2026-11-14T15:21:06.913712+05:30",
+  "ended_at": "2026-11-14T15:23:45.198491+05:30",
+  "model": "gemini-3.5-flash",
+  "outcome": "in_progress",
+  "final_collection_status": "in_progress",
+  "final_attempt_count": 1,
+  "fields_saved": [
+    "degree",
+    "college",
+    "email",
+    "branch",
+    "cgpa",
+    "preferred_location",
+    "graduation_year",
+    "internship_duration_months"
+  ],
+  "events": [
+    {
+      "t": "2026-11-14T15:21:07+05:30",
+      "type": "api_call",
+      "method": "GET",
+      "path": "/v1/candidates/c007",
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": null,
+        "college": null,
+        "degree": null,
+        "branch": null,
+        "graduation_year": null,
+        "cgpa": null,
+        "preferred_location": null,
+        "available_from": null,
+        "internship_duration_months": null,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "pending",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": null,
+        "version": 1,
+        "updated_at": "2026-11-14T08:32:03+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:21:16+05:30",
+      "type": "agent_message",
+      "text": "Hi [REDACTED], I hope you're doing well! I'm reaching out from the ACME Corp internship team regarding your application. Could you please confirm if you are [REDACTED]?"
+    },
+    {
+      "t": "2026-11-14T15:21:32+05:30",
+      "type": "candidate_message",
+      "text": "yeah that's me"
+    },
+    {
+      "t": "2026-11-14T15:21:38+05:30",
+      "type": "tool_call",
+      "name": "confirm_identity",
+      "args": {
+        "is_correct_person": true
+      },
+      "result": {
+        "confirmed": true,
+        "next": "Start collecting the needed fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:21:47+05:30",
+      "type": "agent_message",
+      "text": "Great, thanks for confirming, [NAME]! \n\nTo help us complete your internship application, could you please share:\n1. Your email address\n2. Your college/university name\n3. Your degree (e.g., B.Tech, B.E., B.Sc, BCA, MCA, M.Tech, etc.) and branch/stream?"
+    },
+    {
+      "t": "2026-11-14T15:21:57+05:30",
+      "type": "candidate_message",
+      "text": "email is [EMAIL], I study at Test Institute of Technology, doing b tech in electronics and communication. graduating in 27 btw"
+    },
+    {
+      "t": "2026-11-14T15:22:02+05:30",
+      "type": "tool_call",
+      "name": "record_answers",
+      "args": {
+        "answers": {
+          "degree": "b tech",
+          "college": "Test Institute of Technology",
+          "graduation_year": "27",
+          "email": "[REDACTED]",
+          "branch": "electronics and communication"
+        }
+      },
+      "result": {
+        "results": {
+          "degree": {
+            "status": "accepted",
+            "value": "B.Tech"
+          },
+          "college": {
+            "status": "accepted",
+            "value": "Test Institute of Technology"
+          },
+          "graduation_year": {
+            "status": "invalid",
+            "reason": "graduation_year must be between 2026 and 2028"
+          },
+          "email": {
+            "status": "accepted",
+            "value": "[EMAIL]"
+          },
+          "branch": {
+            "status": "accepted",
+            "value": "electronics and communication"
+          }
+        },
+        "still_needed": [
+          "graduation_year",
+          "cgpa",
+          "preferred_location",
+          "available_from",
+          "internship_duration_months"
+        ],
+        "all_mandatory_fields_ready": false,
+        "hint": "Ask for the remaining fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:09+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c007",
+      "if_match": "\"1\"",
+      "body": {
+        "degree": "B.Tech",
+        "college": "Test Institute of Technology",
+        "email": "[REDACTED]",
+        "branch": "electronics and communication"
+      },
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": null,
+        "cgpa": null,
+        "preferred_location": null,
+        "available_from": null,
+        "internship_duration_months": null,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "pending",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": null,
+        "version": 2,
+        "updated_at": "2026-11-14T09:52:07+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:09+05:30",
+      "type": "tool_call",
+      "name": "save_progress",
+      "args": {},
+      "result": {
+        "saved_fields": [
+          "branch",
+          "college",
+          "degree",
+          "email"
+        ],
+        "not_saved": {},
+        "still_needed": [
+          "graduation_year",
+          "cgpa",
+          "preferred_location",
+          "available_from",
+          "internship_duration_months"
+        ]
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:13+05:30",
+      "type": "agent_message",
+      "text": "Got it, thank you!\n\nFor your graduation year, could you please provide the full 4-digit year (e.g., 2027)? \n\nAlso, could you share:\n- Your current CGPA (on a 10-point scale)\n- Your preferred work location (Mumbai, Bengaluru, Remote, or No preference)"
+    },
+    {
+      "t": "2026-11-14T15:22:25+05:30",
+      "type": "candidate_message",
+      "text": "2027. cgpa is 7.9, and I'd prefer Bangalore. I can start sometime next month"
+    },
+    {
+      "t": "2026-11-14T15:22:26+05:30",
+      "type": "tool_call",
+      "name": "record_answers",
+      "args": {
+        "answers": {
+          "cgpa": "7.9",
+          "preferred_location": "Bangalore",
+          "graduation_year": "2027",
+          "available_from": "sometime next month"
+        }
+      },
+      "result": {
+        "results": {
+          "cgpa": {
+            "status": "accepted",
+            "value": 7.9
+          },
+          "preferred_location": {
+            "status": "accepted",
+            "value": "Bengaluru"
+          },
+          "graduation_year": {
+            "status": "accepted",
+            "value": 2027
+          },
+          "available_from": {
+            "status": "invalid",
+            "reason": "could not read this as an exact date; give an exact date, e.g. 14 July 2026"
+          }
+        },
+        "still_needed": [
+          "available_from",
+          "internship_duration_months"
+        ],
+        "all_mandatory_fields_ready": false,
+        "hint": "Ask for the remaining fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:28+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c007",
+      "if_match": "\"2\"",
+      "body": {
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "graduation_year": 2027
+      },
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": 2027,
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "available_from": null,
+        "internship_duration_months": null,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "pending",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": null,
+        "version": 3,
+        "updated_at": "2026-11-14T09:52:26+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:28+05:30",
+      "type": "tool_call",
+      "name": "save_progress",
+      "args": {},
+      "result": {
+        "saved_fields": [
+          "cgpa",
+          "graduation_year",
+          "preferred_location"
+        ],
+        "not_saved": {},
+        "still_needed": [
+          "available_from",
+          "internship_duration_months"
+        ]
+      }
+    },
+    {
+      "t": "2026-11-14T15:22:43+05:30",
+      "type": "agent_message",
+      "text": "Thanks! We've noted your graduation year, CGPA, and preferred location as Bengaluru.\n\nFor your start date, we need an exact date (day, month, and year between 2026-01-01 and 2027-12-31), e.g., 1 June 2026. What exact date would you be available from?\n\nAlso, how many months would you like the internship to be (2, 3, or 6 months)?"
+    },
+    {
+      "t": "2026-11-14T15:22:56+05:30",
+      "type": "candidate_message",
+      "text": "3 months. Sorry, I have to run now - can we finish the rest tomorrow around 6pm?"
+    },
+    {
+      "t": "2026-11-14T15:23:09+05:30",
+      "type": "tool_call",
+      "name": "record_answers",
+      "args": {
+        "answers": {
+          "internship_duration_months": "3"
+        }
+      },
+      "result": {
+        "results": {
+          "internship_duration_months": {
+            "status": "accepted",
+            "value": 3
+          }
+        },
+        "still_needed": [
+          "available_from"
+        ],
+        "all_mandatory_fields_ready": false,
+        "hint": "Ask for the remaining fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:23:11+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c007",
+      "if_match": "\"3\"",
+      "body": {
+        "internship_duration_months": 3
+      },
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": 2027,
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "available_from": null,
+        "internship_duration_months": 3,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "pending",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": null,
+        "version": 4,
+        "updated_at": "2026-11-14T09:53:10+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:23:11+05:30",
+      "type": "tool_call",
+      "name": "save_progress",
+      "args": {},
+      "result": {
+        "saved_fields": [
+          "internship_duration_months"
+        ],
+        "not_saved": {},
+        "still_needed": [
+          "available_from"
+        ]
+      }
+    },
+    {
+      "t": "2026-11-14T15:23:44+05:30",
+      "type": "system",
+      "event": "llm_error",
+      "detail": "Gemini API error (HTTP 429)"
+    },
+    {
+      "t": "2026-11-14T15:23:45+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c007",
+      "if_match": "\"4\"",
+      "body": {
+        "collection_status": "in_progress",
+        "attempt_count": 1,
+        "last_contacted_at": "2026-11-14T15:23:44.790401+05:30",
+        "notes": "[2026-11-14 15:23] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: branch, cgpa, college, degree, email, graduation_year, internship_duration_months, preferred_location. Still needed: available_from."
+      },
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": 2027,
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "available_from": null,
+        "internship_duration_months": 3,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "in_progress",
+        "attempt_count": 1,
+        "last_contacted_at": "2026-11-14T15:23:44.790401+05:30",
+        "notes": "[2026-11-14 15:23] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: branch, cgpa, college, degree, email, graduation_year, internship_duration_months, preferred_location. Still needed: available_from.",
+        "version": 5,
+        "updated_at": "2026-11-14T09:53:43+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:23:45+05:30",
+      "type": "system",
+      "event": "exit_outcome",
+      "reason": "assistant unavailable: Gemini API error (HTTP 429)",
+      "result": {
+        "recorded": true,
+        "collection_status": "in_progress",
+        "message": "Outcome recorded. Send ONE short closing message to the candidate. Make no more tool calls."
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "candidate_id": "c007",
+  "redacted": true,
+  "redaction_note": "Name, phone, email and profile URLs are masked. Candidate replies in sample runs were written for testing, not by a real candidate.",
+  "started_at": "2026-11-14T15:24:35.249776+05:30",
+  "ended_at": "2026-11-14T15:26:14.723143+05:30",
+  "model": "gemini-3.5-flash",
+  "outcome": "in_progress",
+  "final_collection_status": "in_progress",
+  "final_attempt_count": 2,
+  "fields_saved": [],
+  "events": [
+    {
+      "t": "2026-11-14T15:24:36+05:30",
+      "type": "api_call",
+      "method": "GET",
+      "path": "/v1/candidates/c007",
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": 2027,
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "available_from": null,
+        "internship_duration_months": 3,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "in_progress",
+        "attempt_count": 1,
+        "last_contacted_at": "2026-11-14T15:23:44.790401+05:30",
+        "notes": "[2026-11-14 15:23] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: branch, cgpa, college, degree, email, graduation_year, internship_duration_months, preferred_location. Still needed: available_from.",
+        "version": 5,
+        "updated_at": "2026-11-14T09:53:43+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:26:14+05:30",
+      "type": "system",
+      "event": "llm_error",
+      "detail": "Gemini API error (HTTP 429)"
+    },
+    {
+      "t": "2026-11-14T15:26:14+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c007",
+      "if_match": "\"5\"",
+      "body": {
+        "attempt_count": 2,
+        "last_contacted_at": "2026-11-14T15:26:14.326028+05:30",
+        "notes": "[2026-11-14 15:23] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: branch, cgpa, college, degree, email, graduation_year, internship_duration_months, preferred_location. Still needed: available_from.\n[2026-11-14 15:26] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: nothing. Still needed: available_from."
+      },
+      "status": "ok",
+      "response": {
+        "id": "c007",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "Test Institute of Technology",
+        "degree": "B.Tech",
+        "branch": "electronics and communication",
+        "graduation_year": 2027,
+        "cgpa": 7.9,
+        "preferred_location": "Bengaluru",
+        "available_from": null,
+        "internship_duration_months": 3,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": null,
+        "phone": "[REDACTED]",
+        "collection_status": "in_progress",
+        "attempt_count": 2,
+        "last_contacted_at": "2026-11-14T15:26:14.326028+05:30",
+        "notes": "[2026-11-14 15:23] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: branch, cgpa, college, degree, email, graduation_year, internship_duration_months, preferred_location. Still needed: available_from.\n[2026-11-14 15:26] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: nothing. Still needed: available_from.",
+        "version": 6,
+        "updated_at": "2026-11-14T09:56:12+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:26:14+05:30",
+      "type": "system",
+      "event": "exit_outcome",
+      "reason": "assistant unavailable: Gemini API error (HTTP 429)",
+      "result": {
+        "recorded": true,
+        "collection_status": "in_progress",
+        "message": "Outcome recorded. Send ONE short closing message to the candidate. Make no more tool calls."
+      }
+    }
+  ]
+}

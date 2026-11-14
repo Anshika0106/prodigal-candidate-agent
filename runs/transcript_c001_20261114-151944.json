@@ -1,0 +1,207 @@
+{
+  "candidate_id": "c001",
+  "redacted": true,
+  "redaction_note": "Name, phone, email and profile URLs are masked. Candidate replies in sample runs were written for testing, not by a real candidate.",
+  "started_at": "2026-11-14T15:18:06.679708+05:30",
+  "ended_at": "2026-11-14T15:19:44.012807+05:30",
+  "model": "gemini-3.5-flash",
+  "outcome": "completed",
+  "final_collection_status": "completed",
+  "final_attempt_count": 2,
+  "fields_saved": [
+    "email",
+    "cgpa"
+  ],
+  "events": [
+    {
+      "t": "2026-11-14T15:18:07+05:30",
+      "type": "api_call",
+      "method": "GET",
+      "path": "/v1/candidates/c001",
+      "status": "ok",
+      "response": {
+        "id": "c001",
+        "full_name": "[REDACTED]",
+        "email": null,
+        "college": "NMIMS MPSTME, Mumbai",
+        "degree": "B.Tech",
+        "branch": "Computer Engineering",
+        "graduation_year": 2027,
+        "cgpa": null,
+        "preferred_location": "Mumbai",
+        "available_from": "2027-01-04",
+        "internship_duration_months": 6,
+        "linkedin_url": "[REDACTED]",
+        "github_url": null,
+        "skills": [
+          "Python",
+          "SQL"
+        ],
+        "phone": "[REDACTED]",
+        "collection_status": "in_progress",
+        "attempt_count": 1,
+        "last_contacted_at": "2026-11-14T15:16:48.972956+05:30",
+        "notes": "[2026-11-14 15:16] in_progress: Chat ended early (assistant unavailable: Gemini request failed (RuntimeError)). Collected this chat: nothing. Still needed: email, cgpa.",
+        "version": 2,
+        "updated_at": "2026-11-14T09:46:47+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:18:10+05:30",
+      "type": "agent_message",
+      "text": "Hi [NAME]! I'm an assistant from the ACME Corp internship team. Could you please confirm if I'm speaking with [REDACTED]?"
+    },
+    {
+      "t": "2026-11-14T15:18:36+05:30",
+      "type": "candidate_message",
+      "text": "Yes, this is me. Quick question first - what is this for exactly?"
+    },
+    {
+      "t": "2026-11-14T15:18:38+05:30",
+      "type": "tool_call",
+      "name": "confirm_identity",
+      "args": {
+        "is_correct_person": true
+      },
+      "result": {
+        "confirmed": true,
+        "next": "Start collecting the needed fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:18:40+05:30",
+      "type": "agent_message",
+      "text": "Thanks for confirming, [NAME]! This is to complete your application for an internship at ACME Corp. The details you provide help our team process your application.\n\nWe just need a couple of missing details to wrap things up:\n1. What is your email address?\n2. What is your current CGPA (on a 10-point scale)?"
+    },
+    {
+      "t": "2026-11-14T15:19:01+05:30",
+      "type": "candidate_message",
+      "text": "my email is [NAME][EMAIL] and I got 85% in my last exam"
+    },
+    {
+      "t": "2026-11-14T15:19:03+05:30",
+      "type": "tool_call",
+      "name": "record_answers",
+      "args": {
+        "answers": {
+          "email": "[REDACTED]",
+          "cgpa": "85%"
+        }
+      },
+      "result": {
+        "results": {
+          "email": {
+            "status": "invalid",
+            "reason": "not a valid email address"
+          },
+          "cgpa": {
+            "status": "invalid",
+            "reason": "cgpa must be on the 10-point scale, not a percentage"
+          }
+        },
+        "still_needed": [
+          "email",
+          "cgpa"
+        ],
+        "all_mandatory_fields_ready": false,
+        "hint": "Ask for the remaining fields."
+      }
+    },
+    {
+      "t": "2026-11-14T15:19:06+05:30",
+      "type": "agent_message",
+      "text": "Thanks, [NAME]! A couple of quick notes on those details:\n\n1. **Email:** \"[NAME][EMAIL]\" appears to be incomplete (missing a top-level domain like .com or .in). Could you provide your full email address?\n2. **CGPA:** We need your CGPA converted to a 10-point scale (between 0 and 10), rather than a percentage. What is your CGPA on a 10-point scale?"
+    },
+    {
+      "t": "2026-11-14T15:19:33+05:30",
+      "type": "candidate_message",
+      "text": "Oh sorry! It's [NAME][EMAIL] and my CGPA is 8.4 out of 10"
+    },
+    {
+      "t": "2026-11-14T15:19:36+05:30",
+      "type": "tool_call",
+      "name": "record_answers",
+      "args": {
+        "answers": {
+          "email": "[REDACTED]",
+          "cgpa": "8.4"
+        }
+      },
+      "result": {
+        "results": {
+          "email": {
+            "status": "accepted",
+            "value": "[NAME][EMAIL]"
+          },
+          "cgpa": {
+            "status": "accepted",
+            "value": 8.4
+          }
+        },
+        "still_needed": [],
+        "all_mandatory_fields_ready": true,
+        "hint": "Everything needed is collected - call save_progress or finish_conversation."
+      }
+    },
+    {
+      "t": "2026-11-14T15:19:42+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c001",
+      "if_match": "\"2\"",
+      "body": {
+        "email": "[REDACTED]",
+        "cgpa": 8.4,
+        "collection_status": "completed",
+        "attempt_count": 2,
+        "last_contacted_at": "2026-11-14T15:19:42.072928+05:30",
+        "notes": "[2026-11-14 15:16] in_progress: Chat ended early (assistant unavailable: Gemini request failed (RuntimeError)). Collected this chat: nothing. Still needed: email, cgpa.\n[2026-11-14 15:19] completed: All mandatory fields collected."
+      },
+      "status": "ok",
+      "response": {
+        "id": "c001",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "NMIMS MPSTME, Mumbai",
+        "degree": "B.Tech",
+        "branch": "Computer Engineering",
+        "graduation_year": 2027,
+        "cgpa": 8.4,
+        "preferred_location": "Mumbai",
+        "available_from": "2027-01-04",
+        "internship_duration_months": 6,
+        "linkedin_url": "[REDACTED]",
+        "github_url": null,
+        "skills": [
+          "Python",
+          "SQL"
+        ],
+        "phone": "[REDACTED]",
+        "collection_status": "completed",
+        "attempt_count": 2,
+        "last_contacted_at": "2026-11-14T15:19:42.072928+05:30",
+        "notes": "[2026-11-14 15:16] in_progress: Chat ended early (assistant unavailable: Gemini request failed (RuntimeError)). Collected this chat: nothing. Still needed: email, cgpa.\n[2026-11-14 15:19] completed: All mandatory fields collected.",
+        "version": 3,
+        "updated_at": "2026-11-14T09:49:40+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:19:42+05:30",
+      "type": "tool_call",
+      "name": "finish_conversation",
+      "args": {
+        "outcome": "completed"
+      },
+      "result": {
+        "recorded": true,
+        "collection_status": "completed",
+        "message": "Outcome recorded. Send ONE short closing message to the candidate. Make no more tool calls."
+      }
+    },
+    {
+      "t": "2026-11-14T15:19:44+05:30",
+      "type": "agent_message",
+      "text": "Thank you! All your details have been recorded and your application is complete. Our team will be in touch with you soon! Have a great day!"
+    }
+  ]
+}
