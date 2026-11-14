@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Protocol
 
 RETRYABLE_CODES = {429, 500, 503, 504}
-RETRY_DELAYS = (3, 8, 20)          # seconds between attempts on transient errors
+RETRY_DELAYS = (5, 15, 30, 45)   # seconds between attempts on transient errors (spans a 429 window)
 REQUEST_TIMEOUT_MS = 45_000
 
 
@@ -67,7 +67,8 @@ class GeminiChat:
                 # Empty-parameter tools must omit the schema entirely.
                 parameters=_to_schema(params, types) if params.get("properties") else None,
             ))
-        client = genai.Client(
+        # Keep a reference: if the Client is garbage-collected its HTTP connection is closed.
+        self._client = client = genai.Client(
             api_key=api_key,
             http_options=types.HttpOptions(
                 timeout=REQUEST_TIMEOUT_MS, retry_options=types.HttpRetryOptions(attempts=1)),

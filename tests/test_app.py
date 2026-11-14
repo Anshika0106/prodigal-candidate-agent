@@ -112,3 +112,9 @@ def test_console_input_idle_timeout(monkeypatch):
     reader = app.ConsoleInput(idle_timeout=0.6)
     with pytest.raises(app.IdleTimeout):
         reader.read()
+
+
+def test_redactor_does_not_mangle_timestamps_and_dates():
+    out = Redactor(make_record()).text("[2026-11-14 15:16] in_progress at 2026-11-14T15:16:48+05:30, 9876543210")
+    assert "2026-11-14 15:16" in out and "2026-11-14T15:16:48+05:30" in out
+    assert "9876543210" not in out

@@ -8,8 +8,8 @@ from typing import Any, Callable
 from api_client import ApiError
 
 SENSITIVE_KEYS = {"full_name", "phone", "email", "linkedin_url", "github_url"}
-_EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
-_PHONE_RE = re.compile(r"\+?\d[\d\s-]{8,}\d")
+_EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)*")  # also partial addresses
+_PHONE_RE = re.compile(r"\+\d[\d\s-]{8,}\d|(?<!\d)\d{10,}(?!\d)")  # not dates/timestamps
 _URL_RE = re.compile(r"(?:https?://)?(?:[\w-]+\.)*(?:linkedin|github)\.com\S*", re.I)
 
 
@@ -24,13 +24,14 @@ class Redactor:
         self._tokens = [t for t in re.split(r"\s+", name.strip()) if len(t) >= 3]
 
     def text(self, s: str) -> str:
+        s = _EMAIL_RE.sub("[EMAIL]", s)          # first: emails may contain the candidate's name
+        s = _URL_RE.sub("[URL]", s)
+        s = _PHONE_RE.sub("[PHONE]", s)
         for value in sorted(self._exact, key=len, reverse=True):
             s = re.sub(re.escape(value), "[REDACTED]", s, flags=re.I)
         for token in self._tokens:
             s = re.sub(rf"\b{re.escape(token)}\b", "[NAME]", s, flags=re.I)
-        s = _EMAIL_RE.sub("[EMAIL]", s)
-        s = _URL_RE.sub("[URL]", s)
-        return _PHONE_RE.sub("[PHONE]", s)
+        return s
 
     def obj(self, value: Any, key: str | None = None) -> Any:
         if key in SENSITIVE_KEYS and isinstance(value, (str, list)):
@@ -59,7 +60,7 @@ class Transcript:
             "candidate_id": candidate_id,
             "redacted": True,
             "redaction_note": "Name, phone, email and profile URLs are masked. Candidate replies in "
-                              "sample runs were typed by the developer (test data), not a real person.",
+                              "sample runs were written for testing, not by a real candidate.",
             "started_at": self.started_at,
             "ended_at": self._now().isoformat(),
             **meta,

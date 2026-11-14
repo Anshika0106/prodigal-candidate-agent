@@ -55,6 +55,7 @@ class CollectionSession:
         self.candidate_id = record["id"]
         self._now = now_fn or (lambda: datetime.now().astimezone())
         self.identity_confirmed = False
+        self.contacted = False                # set by the agent once a message reached the candidate
         self.staged: dict[str, Any] = {}      # validated, normalised, not yet saved
         self.corrections: set[str] = set()    # fields the candidate explicitly corrected
         self.saved: list[str] = []            # data fields written during this conversation
@@ -94,12 +95,14 @@ class CollectionSession:
         return (f"Collected this chat: {', '.join(collected) or 'nothing'}. "
                 f"Still needed: {', '.join(left) or 'nothing'}.")
 
-    def _commit(self, status: str, text: str) -> dict:
-        """Single guarded write: staged answers + final collection tracking."""
+    def _commit(self, status: str, text: str, count_attempt: bool = True) -> dict:
+        """Single guarded write: staged answers + final collection tracking.
+
+        count_attempt=False skips attempt_count/last_contacted_at (nobody was contacted)."""
         result = apply_updates(
             self.client, self.candidate_id, self.record, self.staged, self.corrections,
-            status=status, note=self._note(status, text), increment_attempt=True,
-            contacted=True, now=self._now(), require_complete=(status == "completed"),
+            status=status, note=self._note(status, text), increment_attempt=count_attempt,
+            contacted=count_attempt, now=self._now(), require_complete=(status == "completed"),
         )
         self.record = result.record
         self.saved += [f for f in result.sent if f not in TRACKING_FIELDS and f not in self.saved]
@@ -275,8 +278,10 @@ class CollectionSession:
         else:
             status = "no_answer"
             text = f"Candidate left before providing any information ({_clip(reason, 120)})."
+        # A failure of ours before the candidate heard anything is not a contact attempt.
+        count = not (kind == "technical" and not self.contacted)
         try:
-            return self._commit(status, text)
+            return self._commit(status, text, count_attempt=count)
         except Exception as exc:   # report, never crash during shutdown
             return {"error": f"could not record outcome: {type(exc).__name__}"}
 

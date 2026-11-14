@@ -183,3 +183,26 @@ def test_prompt_injection_cannot_bypass_python_guards():
     assert all("phone" not in p and "id" not in p for p in api.attempts)
     blob = json.dumps(llm.received[4][1])
     assert "rejected" in blob and "still_needed" in blob
+
+
+def test_llm_failure_before_any_contact_is_not_counted_as_an_attempt():
+    class Down(ScriptedLLM):
+        def send_text(self, text):
+            raise LLMError("Gemini API error (HTTP 429)")
+    agent, _, api, _, _ = build(Down(), [])
+    agent.run()
+    assert api.record["collection_status"] == "in_progress"
+    assert api.record["attempt_count"] == 2 and api.record["last_contacted_at"] is None   # unchanged
+    assert "assistant unavailable" in api.record["notes"]
+
+
+def test_llm_failure_after_candidate_was_contacted_counts_as_an_attempt():
+    class DownAfterGreeting(ScriptedLLM):
+        def send_text(self, text):
+            if self.received:
+                raise LLMError("Gemini API error (HTTP 429)")
+            self.received.append(("text", text))
+            return turn("Hi Aarav?")
+    agent, _, api, _, _ = build(DownAfterGreeting(), ["hello"])
+    agent.run()
+    assert api.record["attempt_count"] == 3 and api.record["last_contacted_at"]

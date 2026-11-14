@@ -55,7 +55,7 @@ def test_transient_errors_are_retried_then_succeed():
 
 def test_persistent_and_non_retryable_errors_raise_llm_error():
     boom = errors.APIError(503, {"error": {"message": "busy"}})
-    chat, sleeps = make_chat(boom, boom, boom, boom)
+    chat, sleeps = make_chat(*[boom] * (len(llm.RETRY_DELAYS) + 1))
     with pytest.raises(LLMError, match="503"):
         chat.send_text("hi")
     assert len(sleeps) == len(llm.RETRY_DELAYS)
@@ -67,7 +67,7 @@ def test_persistent_and_non_retryable_errors_raise_llm_error():
 
 
 def test_network_exception_is_wrapped():
-    chat, _ = make_chat(*[ConnectionError("down")] * 4)
+    chat, _ = make_chat(*[ConnectionError("down")] * (len(llm.RETRY_DELAYS) + 1))
     with pytest.raises(LLMError, match="ConnectionError"):
         chat.send_text("hi")
 
@@ -103,3 +103,11 @@ def test_every_tool_spec_converts_to_a_gemini_declaration():
     assert schema.properties["answers"].properties["skills"].type == types.Type.ARRAY
     assert "phone" not in schema.properties["answers"].properties         # never offered to the LLM
     assert "full_name" not in schema.properties["answers"].properties
+
+
+def test_client_is_kept_alive_so_http_connection_is_not_closed():
+    """Regression: the SDK Client used to be garbage-collected, closing its HTTP client."""
+    import gc
+    chat = GeminiChat("dummy-key", "model-x", "system", TOOL_SPECS)
+    gc.collect()
+    assert chat._client._api_client._httpx_client.is_closed is False

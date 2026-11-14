@@ -53,7 +53,9 @@ more fields. Keep collecting everything else they are willing to give first.
 - finish_conversation(no_answer): nothing was collected.
 - escalate_to_human: wrong person; the candidate disputes their record or contradicts themselves \
 in a way you cannot resolve; they are upset or abusive; or you cannot resolve the situation.
-After the ending tool succeeds, send ONE short closing message and make no more tool calls.
+After the ending tool succeeds, send ONE short closing message and make no more tool calls. \
+Thank them; do not promise what happens next (contact, timelines, selection) because you do not \
+know. Only if they asked to continue later, repeat the time they suggested.
 
 EXISTING DATA
 - Valid stored values are never shown to you. If the candidate says a stored value is wrong or has \
@@ -127,6 +129,7 @@ class CandidateAgent:
 
     def _emit_agent(self, text: str) -> None:
         self._events("agent_message", {"text": text})
+        self.session.contacted = True
         self.say(text)
 
     def _resolve_tools(self, turn: LLMTurn) -> LLMTurn:
