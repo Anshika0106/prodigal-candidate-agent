@@ -101,8 +101,9 @@ previous notes, and the conversation. Stored email/phone/college etc. are never 
 
 Redacted transcripts (name, phone, email and profile URLs masked) with the chat, every tool call
 and result, and every API call with its response. These are **real runs** against the live API and live
-Gemini. The candidate's replies were written by the assistant that built this project as test
-input (not by a real candidate), and the database was not reset between runs.
+Gemini. The candidate replies are test input, not from a real candidate: for c001 and c007 they were
+written by the assistant that built this project; the two c002 runs were made by the project owner in
+their own terminal. The database was not reset between runs.
 
 - `transcript_c001_*`: confirms identity, asks what the data is for, gives an invalid email and a
   percentage instead of a CGPA, corrects both -> `completed`. Starts from an earlier `in_progress` record
@@ -117,8 +118,33 @@ input (not by a real candidate), and the database was not reset between runs.
   (`RESOURCE_EXHAUSTED`). It records `in_progress` with a note and nothing else. This run also exposed a
   bug (a failure before any message was delivered still counted as a contact attempt, so c007 has
   `attempt_count=2`); it is fixed and unit-tested, but the record was not repaired.
+- `transcript_c002_20261114-154344.json` (failed, 4 events): **safe technical-failure bookkeeping.** Gemini
+  returned HTTP 429 before the greeting. The app recorded `in_progress` with a note (what was still
+  needed) in one PATCH that changed only `collection_status` and `notes`: `attempt_count` and
+  `last_contacted_at` were deliberately left alone because the candidate was never contacted. This is the
+  fixed behaviour; the older c007 failure above shows the bug it replaced. Its note is carried into the
+  next run's context.
+- `transcript_c002_20261114-160308.json` (successful, 29 events): **end-to-end completion.** Continues from
+  that `in_progress` record (3 fields missing), confirms identity, then handles three rejected answers
+  (graduation year `2030` out of range, start date "next month" not an exact date, duration `4` not an
+  allowed value), each followed by a valid answer. Progress is saved in separate PATCHes, each `If-Match`
+  matching the previous response's version (2 -> 3 -> 4 -> 5). The final PATCH writes the last field,
+  `completed`, `attempt_count` 0 -> 1, `last_contacted_at`, and appends to the existing note.
 - Not captured: a live run that ends in `refused`, `needs_human`, `no_answer`, or a natural-language
   "continue later" (blocked by the Gemini quota). Those paths are unit-tested with a scripted LLM only.
+
+### Reading the transcripts
+
+- **Event order:** a `PATCH` entry appears *before* the `save_progress` / `finish_conversation` tool-result
+  entry that caused it. Events are logged when each step finishes, and a tool result is logged only after
+  the tool (and therefore its API call) has returned. So the order shows completion order, not request order.
+- **Redaction placeholders:** `[NAME]`, `[REDACTED]`, `[EMAIL]`, `[PHONE]` and `[URL]` replace personal
+  data (API responses show `full_name`, `phone` and `email` as `[REDACTED]`).
+- **Extra placeholders in the successful c002 transcript:** it also contains `[MONTH]` (two month
+  names in one agent message, where "between [MONTH] 2026 and [MONTH] 2027" gives the allowed start-date
+  range) and one `[NAME]` in the middle of an agent message. A manual clean-up pass masked a few words
+  more than the automatic redactor would have, to be safe about names. The original wording of those
+  words could not be restored, so the placeholders stay. Nothing else in the file was altered.
 
 ## Status
 

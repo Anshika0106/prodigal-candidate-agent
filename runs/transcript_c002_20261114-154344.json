@@ -1,0 +1,102 @@
+{
+  "candidate_id": "c002",
+  "redacted": true,
+  "redaction_note": "Name, phone, email and profile URLs are masked. Candidate replies in sample runs were written for testing, not by a real candidate.",
+  "started_at": "2026-11-14T15:42:04.388774+05:30",
+  "ended_at": "2026-11-14T15:43:44.215292+05:30",
+  "model": "gemini-3.5-flash",
+  "outcome": "in_progress",
+  "final_collection_status": "in_progress",
+  "final_attempt_count": 0,
+  "fields_saved": [],
+  "events": [
+    {
+      "t": "2026-11-14T15:42:05+05:30",
+      "type": "api_call",
+      "method": "GET",
+      "path": "/v1/candidates/c002",
+      "status": "ok",
+      "response": {
+        "id": "c002",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "VJTI, Mumbai",
+        "degree": "B.Tech",
+        "branch": "Information Technology",
+        "graduation_year": null,
+        "cgpa": 8.7,
+        "preferred_location": "Remote",
+        "available_from": null,
+        "internship_duration_months": null,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": [
+          "Java",
+          "Spring Boot"
+        ],
+        "phone": "[REDACTED]",
+        "collection_status": "pending",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": null,
+        "version": 1,
+        "updated_at": "2026-11-14T08:32:03+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:43:43+05:30",
+      "type": "system",
+      "event": "llm_error",
+      "detail": "Gemini API error (HTTP 429)"
+    },
+    {
+      "t": "2026-11-14T15:43:44+05:30",
+      "type": "api_call",
+      "method": "PATCH",
+      "path": "/v1/candidates/c002",
+      "if_match": "\"1\"",
+      "body": {
+        "collection_status": "in_progress",
+        "notes": "[2026-11-14 15:43] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: nothing. Still needed: graduation_year, available_from, internship_duration_months."
+      },
+      "status": "ok",
+      "response": {
+        "id": "c002",
+        "full_name": "[REDACTED]",
+        "email": "[REDACTED]",
+        "college": "VJTI, Mumbai",
+        "degree": "B.Tech",
+        "branch": "Information Technology",
+        "graduation_year": null,
+        "cgpa": 8.7,
+        "preferred_location": "Remote",
+        "available_from": null,
+        "internship_duration_months": null,
+        "linkedin_url": null,
+        "github_url": null,
+        "skills": [
+          "Java",
+          "Spring Boot"
+        ],
+        "phone": "[REDACTED]",
+        "collection_status": "in_progress",
+        "attempt_count": 0,
+        "last_contacted_at": null,
+        "notes": "[2026-11-14 15:43] in_progress: Chat ended early (assistant unavailable: Gemini API error (HTTP 429)). Collected this chat: nothing. Still needed: graduation_year, available_from, internship_duration_months.",
+        "version": 2,
+        "updated_at": "2026-11-14T10:13:42+00:00"
+      }
+    },
+    {
+      "t": "2026-11-14T15:43:44+05:30",
+      "type": "system",
+      "event": "exit_outcome",
+      "reason": "assistant unavailable: Gemini API error (HTTP 429)",
+      "result": {
+        "recorded": true,
+        "collection_status": "in_progress",
+        "message": "Outcome recorded. Send ONE short closing message to the candidate. Make no more tool calls."
+      }
+    }
+  ]
+}
