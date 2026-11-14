@@ -9,6 +9,7 @@ import threading
 import time
 from pathlib import Path
 
+import ui
 from agent import SYSTEM_PROMPT, CandidateAgent, IdleTimeout
 from api_client import ApiError, CandidateApiClient
 from config import ConfigError, load_config
@@ -39,7 +40,7 @@ class ConsoleInput:
         if not self._started:
             threading.Thread(target=self._pump, daemon=True).start()
             self._started = True
-        print("You: ", end="", flush=True)
+        print(ui.prompt(), end="", flush=True)
         deadline = time.monotonic() + self._idle if self._idle > 0 else None
         while True:
             try:
@@ -65,10 +66,6 @@ def parse_args(argv=None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
-def say(text: str) -> None:
-    print(f"\nAgent: {text}\n", flush=True)
-
-
 def handle_nothing_to_collect(client, record: dict, mark_complete: bool) -> None:
     print("Nothing is missing or invalid - no conversation needed.")
     if not mark_complete:
@@ -89,6 +86,7 @@ def main(argv=None) -> int:
     for stream in (sys.stdout, sys.stdin):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
+    ui.enable_ansi()
     try:
         config = load_config()
     except ConfigError as exc:
@@ -98,6 +96,7 @@ def main(argv=None) -> int:
         print("Configuration error: set LLM_API_KEY and LLM_MODEL in .env")
         return 1
 
+    ui.banner(config.llm_model)
     transcript = Transcript()
     client = RecordingClient(CandidateApiClient(config), transcript.add)
     try:
@@ -107,16 +106,14 @@ def main(argv=None) -> int:
         return 1
 
     analysis = analyse_record(record)
-    print(f"Candidate {record['id']}: collection_status={analysis.collection_status}, "
-          f"attempt_count={analysis.attempt_count}")
+    ui.candidate_panel(record["id"], analysis.collection_status, analysis.attempt_count,
+                       analysis.fields_to_collect)
     if analysis.blocked_read_only:
         print(f"Read-only field problem ({', '.join(analysis.blocked_read_only)}): needs a human; "
               "the agent cannot fix it.")
     if not analysis.needs_collection:
         handle_nothing_to_collect(client, record, args.mark_complete_if_done)
         return 0
-    print(f"Fields to collect: {', '.join(analysis.fields_to_collect)}")
-
     session = CollectionSession(client, record)
     try:
         llm = GeminiChat(config.llm_api_key, config.llm_model, SYSTEM_PROMPT, TOOL_SPECS)
@@ -124,8 +121,14 @@ def main(argv=None) -> int:
         print(f"Could not start the LLM client ({type(exc).__name__}).")
         return 1
 
-    print("Chat started. Type /quit to leave or /later to continue later.\n")
-    agent = CandidateAgent(session, llm, say, ConsoleInput(args.idle_timeout).read, transcript.add)
+    ui.commands_hint()
+    view = ui.ChatView(session, len(analysis.fields_to_collect))
+
+    def on_event(kind: str, data: dict) -> None:
+        transcript.add(kind, data)       # transcript is unchanged; the view only displays
+        view.on_event(kind, data)
+
+    agent = CandidateAgent(session, llm, view.agent_message, ConsoleInput(args.idle_timeout).read, on_event)
     try:
         agent.run()
     finally:
@@ -135,11 +138,7 @@ def main(argv=None) -> int:
                 "fields_saved": session.saved}
         path = transcript.save(Path(args.transcript_dir), record["id"], meta, record)
     final = analyse_record(session.record)
-    print(f"\n[Chat ended] collection_status={session.record.get('collection_status')}, "
-          f"attempt_count={session.record.get('attempt_count')}, "
-          f"fields saved: {', '.join(session.saved) or 'none'}, "
-          f"still needed: {', '.join(final.fields_to_collect) or 'none'}")
-    print(f"Transcript saved to {path}")
+    ui.final_summary(record["id"], session.record, session.saved, final.fields_to_collect, path)
     if agent.llm_failed:
         return 2
     return 0 if session.outcome else 1
